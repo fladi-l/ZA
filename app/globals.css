@@ -1,0 +1,50 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: light;
+}
+
+* {
+  scroll-behavior: smooth;
+}
+
+/* Sichtbarer Fokus-Ring überall, auch mit Tailwind-Resets */
+:focus-visible {
+  outline: 2px solid theme("colors.terracotta.DEFAULT");
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Signature-Element: dezenter Sonnenbogen/Horizont, z.B. im Header */
+.horizon-arc {
+  position: relative;
+  overflow: hidden;
+}
+.horizon-arc::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: -60%;
+  width: 140%;
+  aspect-ratio: 2 / 1;
+  transform: translateX(-50%);
+  border-radius: 50%;
+  background: radial-gradient(
+    circle at 50% 0%,
+    rgba(193, 98, 45, 0.22) 0%,
+    rgba(193, 98, 45, 0.06) 45%,
+    transparent 70%
+  );
+  pointer-events: none;
+}
