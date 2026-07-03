@@ -66,15 +66,6 @@ export interface Comment {
   created_at: string;
 }
 
-export interface AiMessage {
-  id: string;
-  topic_id: string;
-  role: "user" | "assistant";
-  content: string;
-  created_by: string | null;
-  created_at: string;
-}
-
 export interface TripMeta {
   id: number;
   departure_date: string | null;
@@ -93,7 +84,6 @@ export type Database = {
       attachments: { Row: Attachment; Insert: Partial<Attachment>; Update: Partial<Attachment> };
       links: { Row: Link; Insert: Partial<Link>; Update: Partial<Link> };
       comments: { Row: Comment; Insert: Partial<Comment>; Update: Partial<Comment> };
-      ai_messages: { Row: AiMessage; Insert: Partial<AiMessage>; Update: Partial<AiMessage> };
       trip_meta: { Row: TripMeta; Insert: Partial<TripMeta>; Update: Partial<TripMeta> };
     };
   };

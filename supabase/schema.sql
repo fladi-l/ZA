@@ -89,16 +89,6 @@ create table if not exists public.trip_meta (
 );
 insert into public.trip_meta (id) values (1) on conflict (id) do nothing;
 
--- 9) AI CONVERSATIONS (Verlauf des KI-Assistenten je Topic)
-create table if not exists public.ai_messages (
-  id uuid primary key default gen_random_uuid(),
-  topic_id uuid not null references public.topics(id) on delete cascade,
-  role text not null check (role in ('user', 'assistant')),
-  content text not null,
-  created_by uuid references public.profiles(id),
-  created_at timestamptz not null default now()
-);
-
 -- Trigger: updated_at/updated_by auf topics automatisch pflegen,
 -- sobald verknüpfte Kind-Objekte sich ändern, macht die App selbst
 -- (einfacher als DB-Trigger, siehe lib/supabase/topics.ts)
@@ -118,7 +108,6 @@ alter table public.attachments enable row level security;
 alter table public.links enable row level security;
 alter table public.comments enable row level security;
 alter table public.trip_meta enable row level security;
-alter table public.ai_messages enable row level security;
 
 -- Hilfsfunktion: ist der aktuelle User einer der beiden erlaubten?
 create or replace function public.is_trip_member()
@@ -168,11 +157,6 @@ create policy "trip members full access comments"
 
 create policy "trip members full access trip_meta"
   on public.trip_meta for all
-  using (public.is_trip_member())
-  with check (public.is_trip_member());
-
-create policy "trip members full access ai_messages"
-  on public.ai_messages for all
   using (public.is_trip_member())
   with check (public.is_trip_member());
 

@@ -33,17 +33,11 @@ Next.js 14 (App Router) + Supabase (DB, Auth, Storage, Realtime) + Claude-API.
    set departure_date = '2027-02-10', return_date = '2027-02-28';
    ```
 
-## 2. Claude-API-Key besorgen
-
-Auf https://console.anthropic.com einen API-Key erzeugen. Dieser wird **nur**
-serverseitig in der Route `app/api/ai-assistant/route.ts` verwendet und ist nie
-im Browser sichtbar.
-
-## 3. Lokale Entwicklung
+## 2. Lokale Entwicklung
 
 ```bash
 cp .env.local.example .env.local
-# Werte aus Supabase (Settings -> API) und Anthropic Console eintragen
+# Werte aus Supabase (Settings -> API) eintragen
 npm install
 npm run dev
 ```
@@ -51,13 +45,17 @@ npm run dev
 App läuft dann auf http://localhost:3000. Der erste Aufruf leitet automatisch
 zu `/login` weiter.
 
-## 4. Deployment auf Vercel
+## 3. Deployment auf Vercel
 
 1. Repo zu GitHub pushen.
 2. Auf https://vercel.com "Add New Project" -> Repo auswählen.
-3. Unter **Environment Variables** die drei Werte aus `.env.local` eintragen
-   (`NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `ANTHROPIC_API_KEY`).
+3. Unter **Environment Variables** die zwei Werte aus `.env.local` eintragen
+   (`NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`).
 4. Deploy klicken. Fertig – die App ist live, nur für euch zwei zugänglich.
+
+Kosten: Sowohl Supabase als auch Vercel bieten für dieses kleine private
+Projekt einen kostenlosen Free-Tier, der völlig ausreicht. Es fallen keine
+laufenden Kosten an.
 
 ## Architektur-Überblick
 
@@ -66,13 +64,8 @@ zu `/login` weiter.
   nur die zwei in `profiles` eingetragenen User überhaupt Daten sehen –
   selbst wenn jemand versehentlich einen dritten Auth-User anlegt.
 - **Realtime-Sync**: Jede Client-Komponente (Checkliste, Notizen, Kommentare,
-  Anhänge, Links, KI-Chat) abonniert die passende Supabase-Realtime-Tabelle.
+  Anhänge, Links) abonniert die passende Supabase-Realtime-Tabelle.
   Änderungen der einen Person erscheinen ohne Reload bei der anderen.
-- **KI-Assistent**: `lib/ai-context.ts` definiert pro Thema (Flüge, Mietwagen,
-  Route, Budget, …) die relevanten Fragen, Aspekte und typischen Fehler. Die
-  Route `app/api/ai-assistant/route.ts` baut daraus den System-Prompt, ruft
-  Claude auf und speichert Frage + Antwort in `ai_messages`, damit beide den
-  Verlauf sehen. Modell und Prompt können dort zentral angepasst werden.
 - **Design**: Tokensystem in `tailwind.config.ts` (Weiß/Dunkelgrün/Sand +
   Terracotta-Akzent), Fraunces als Display-Schrift, Inter für UI-Text,
   JetBrains Mono für Daten/Countdown/Status. Signature-Element ist der
@@ -83,7 +76,7 @@ zu `/login` weiter.
 - Push-Benachrichtigungen bei neuen Kommentaren (z. B. über Supabase Edge
   Functions + Web Push).
 - Offline-Fähigkeit als PWA (Service Worker + Manifest).
-- Eigene KI-Vorschläge automatisch generieren lassen ("Was fehlt noch?"),
-  z. B. per Cron-Job/Edge Function, die regelmäßig `ai_messages` mit einem
-  Analyse-Prompt befüllt.
 - Foto-Vorschau direkt im Anhänge-Bereich statt nur Icon + Link.
+- Falls später doch gewünscht: ein KI-Assistent lässt sich bei Bedarf wieder
+  ergänzen, dann aber mit einem Budget-Limit im Anthropic-Dashboard, um die
+  Kosten im Blick zu behalten.

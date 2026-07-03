@@ -7,7 +7,6 @@ import { Notes } from "@/components/Notes";
 import { Comments } from "@/components/Comments";
 import { Attachments } from "@/components/Attachments";
 import { Links } from "@/components/Links";
-import { AIAssistant } from "@/components/AIAssistant";
 import { StatusControls } from "@/components/StatusControls";
 
 export const dynamic = "force-dynamic";
@@ -29,14 +28,13 @@ export default async function TopicDetailPage({ params }: { params: { id: string
 
   if (!topic) notFound();
 
-  const [{ data: notes }, { data: checklistItems }, { data: attachments }, { data: links }, { data: comments }, { data: aiMessages }, { data: profiles }] =
+  const [{ data: notes }, { data: checklistItems }, { data: attachments }, { data: links }, { data: comments }, { data: profiles }] =
     await Promise.all([
       supabase.from("notes").select("*").eq("topic_id", topic.id).order("created_at", { ascending: false }),
       supabase.from("checklist_items").select("*").eq("topic_id", topic.id).order("sort_order", { ascending: true }),
       supabase.from("attachments").select("*").eq("topic_id", topic.id).order("created_at", { ascending: false }),
       supabase.from("links").select("*").eq("topic_id", topic.id).order("created_at", { ascending: false }),
       supabase.from("comments").select("*").eq("topic_id", topic.id).order("created_at", { ascending: true }),
-      supabase.from("ai_messages").select("*").eq("topic_id", topic.id).order("created_at", { ascending: true }),
       supabase.from("profiles").select("id, display_name"),
     ]);
 
@@ -66,13 +64,6 @@ export default async function TopicDetailPage({ params }: { params: { id: string
             userId={user.id}
           />
         </section>
-
-        <AIAssistant
-          topicId={topic.id}
-          topicSlug={topic.slug}
-          topicTitle={topic.title}
-          initialMessages={aiMessages ?? []}
-        />
 
         <section className="rounded-2xl bg-paper p-5 shadow-card">
           <h2 className="font-display text-lg font-semibold text-bush-900">Checkliste</h2>
